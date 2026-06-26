@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
 import { LogoutButton } from "./logout-button";
+import { StartSellingButton } from "./start-selling-button";
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -26,9 +25,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="mt-8">
-        <Button asChild>
-          <Link href="/seller/dashboard">Start selling on Edu-Vault</Link>
-        </Button>
+        <StartSellingButton />
       </div>
     </div>
   );
