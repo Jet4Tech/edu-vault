@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { NavbarUserMenu } from "@/components/NavbarUserMenu";
+import { BasketIcon } from "@/components/BasketIcon";
 
 export default async function Navbar() {
   const supabase = createClient();
@@ -32,7 +32,7 @@ export default async function Navbar() {
       <div className="flex items-center gap-4">
         {user ? (
           <>
-            <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+            <BasketIcon />
             <NavbarUserMenu email={user.email!} />
           </>
         ) : (
