@@ -3,6 +3,7 @@ import { createProductSchema } from "@/lib/validators/product";
 import { getCategoryBySlug } from "@/lib/categories";
 import { adminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 const MAX_FILE_SIZE_BYTES = 524288000;
 
@@ -23,6 +24,13 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!rateLimit(user.id + ":products", 30, 60 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
   }
 
   const { data: profile } = await supabase
