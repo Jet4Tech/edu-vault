@@ -28,7 +28,7 @@ export default async function BasketPage() {
 
   const { data: basketItems } = await supabase
     .from("basket_items")
-    .select("*, products(*, users(id, full_name:name, avatar_url))")
+    .select("*, products(*, users:profiles(id, full_name:name, avatar_url))")
     .eq("user_id", user.id)
     .eq("products.status", "published");
 

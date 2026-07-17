@@ -21,15 +21,28 @@ export async function POST() {
 
   const { data: items } = await supabase
     .from("basket_items")
-    .select("*, products(*, users(id, stripe_account_id, stripe_onboarding_complete))")
+    .select("*, products(*)")
     .eq("user_id", user.id);
 
   if (!items || items.length === 0) {
     return NextResponse.json({ error: "Your basket is empty" }, { status: 400 });
   }
 
+  // Seller payout status lives on users rows the buyer cannot read under RLS,
+  // so look it up with the admin client after the auth check above.
+  const sellerIds = Array.from(
+    new Set(items.map((item) => item.products.seller_id))
+  );
+  const { data: sellers } = await adminClient
+    .from("users")
+    .select("id, stripe_onboarding_complete")
+    .in("id", sellerIds);
+
+  const sellerById = new Map((sellers ?? []).map((s) => [s.id, s]));
+
   for (const item of items) {
-    if (item.products.users.stripe_onboarding_complete !== true) {
+    const seller = sellerById.get(item.products.seller_id);
+    if (seller?.stripe_onboarding_complete !== true) {
       return NextResponse.json(
         {
           error:

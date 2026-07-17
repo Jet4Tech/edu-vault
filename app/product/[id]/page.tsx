@@ -23,7 +23,7 @@ async function getProduct(id: string) {
 
   return supabase
     .from("products")
-    .select("*, users(id, full_name:name, avatar_url, bio)")
+    .select("*, users:profiles(id, full_name:name, avatar_url, bio)")
     .eq("id", id)
     .single();
 }
@@ -71,7 +71,7 @@ export default async function ProductPage({
 
   const { data: reviews } = await supabase
     .from("reviews")
-    .select("*, users(full_name:name, avatar_url)")
+    .select("*, users:profiles(full_name:name, avatar_url)")
     .eq("product_id", params.id)
     .order("created_at", { ascending: false });
 

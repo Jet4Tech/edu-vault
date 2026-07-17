@@ -20,7 +20,7 @@ export default async function SellerProfilePage({
   const supabase = createClient();
 
   const { data: seller, error } = await supabase
-    .from("users")
+    .from("profiles")
     .select("*")
     .eq("id", params.id)
     .single();
@@ -31,7 +31,7 @@ export default async function SellerProfilePage({
 
   const { data: products } = await supabase
     .from("products")
-    .select("*, users(id, full_name:name, avatar_url)")
+    .select("*, users:profiles(id, full_name:name, avatar_url)")
     .eq("seller_id", params.id)
     .eq("status", "published")
     .order("created_at", { ascending: false });

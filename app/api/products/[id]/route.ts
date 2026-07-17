@@ -11,7 +11,7 @@ export async function GET(
 
   const { data: product, error } = await supabase
     .from("products")
-    .select("*, users(id, name, avatar_url)")
+    .select("*, users:profiles(id, name, avatar_url)")
     .eq("id", params.id)
     .single();
 

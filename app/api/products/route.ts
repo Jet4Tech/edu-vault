@@ -136,7 +136,7 @@ export async function GET(request: Request) {
 
   let query = supabase
     .from("products")
-    .select("*, users(id, name, avatar_url)")
+    .select("*, users:profiles(id, name, avatar_url)")
     .eq("status", "published");
 
   if (search) {

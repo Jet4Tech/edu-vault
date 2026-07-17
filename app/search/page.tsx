@@ -15,7 +15,7 @@ export default async function SearchPage({
 
   let query = supabase
     .from("products")
-    .select("*, users(id, full_name:name, avatar_url)")
+    .select("*, users:profiles(id, full_name:name, avatar_url)")
     .eq("status", "published");
 
   if (q) {

@@ -8,7 +8,7 @@ export default async function Home() {
 
   const { data: products } = await supabase
     .from("products")
-    .select("*, users(id, full_name:name, avatar_url)")
+    .select("*, users:profiles(id, full_name:name, avatar_url)")
     .eq("status", "published")
     .order("created_at", { ascending: false })
     .limit(20);
