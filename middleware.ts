@@ -28,7 +28,15 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const protectedPaths = ["/library", "/seller", "/dashboard"];
+  // /seller/[id] (public profile) must stay reachable while logged out, so
+  // only the seller management routes are protected — not /seller as a whole.
+  const protectedPaths = [
+    "/library",
+    "/dashboard",
+    "/seller/dashboard",
+    "/seller/products",
+    "/seller/connect",
+  ];
   const isProtected = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
