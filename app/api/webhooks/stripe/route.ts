@@ -80,18 +80,25 @@ export async function POST(request: Request) {
       const items = checkoutSession.basket_snapshot as SnapshotItem[];
 
       for (const item of items) {
-        try {
-          await adminClient.from("orders").insert({
-            buyer_id: checkoutSession.buyer_id,
-            product_id: item.product_id,
-            seller_id: item.seller_id,
-            amount_paid: item.price,
-            currency: item.currency,
-            stripe_payment_intent: paymentIntent.id,
-            status: "paid",
-          });
-        } catch (err) {
-          console.error("Order insert error (may be duplicate):", err);
+        const { error: orderError } = await adminClient.from("orders").insert({
+          buyer_id: checkoutSession.buyer_id,
+          product_id: item.product_id,
+          seller_id: item.seller_id,
+          amount_paid: item.price,
+          currency: item.currency,
+          stripe_payment_intent: paymentIntent.id,
+          status: "paid",
+        });
+
+        // 23505 = duplicate from a prior partial webhook attempt — safe to skip.
+        // Any other failure must 500 so Stripe retries before we mark the
+        // session paid and clear the basket.
+        if (orderError && orderError.code !== "23505") {
+          console.error("Order insert failed:", orderError);
+          return NextResponse.json(
+            { error: "Order insert failed" },
+            { status: 500 }
+          );
         }
       }
 
