@@ -58,9 +58,6 @@ export async function POST() {
     (sum, item) => sum + Math.round(item.products.price * 100),
     0
   );
-  const platformFeeCents = Math.floor(
-    totalCents * (Number(process.env.PLATFORM_FEE_PERCENT) / 100)
-  );
 
   const basketSnapshot = items.map((item) => ({
     product_id: item.product_id,
@@ -103,8 +100,10 @@ export async function POST() {
         },
         quantity: 1,
       })),
+      // No application_fee_amount here: this is a separate charges-and-transfers
+      // model. The platform fee is taken in the webhook by transferring only
+      // (100 - PLATFORM_FEE_PERCENT)% of each seller's total.
       payment_intent_data: {
-        application_fee_amount: platformFeeCents,
         transfer_group: `order_${checkoutSession.id}`,
         metadata: {
           checkout_session_id: checkoutSession.id,
