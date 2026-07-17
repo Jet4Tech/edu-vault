@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -12,12 +11,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function NavbarUserMenu({ email }: { email: string }) {
-  const router = useRouter();
-
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/");
+    // Full page load so the server-rendered navbar picks up the signed-out state.
+    window.location.href = "/";
   }
 
   const initial = email.charAt(0).toUpperCase();

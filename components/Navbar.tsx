@@ -30,11 +30,9 @@ export default async function Navbar() {
       </div>
 
       <div className="flex items-center gap-4">
+        <BasketIcon />
         {user ? (
-          <>
-            <BasketIcon />
-            <NavbarUserMenu email={user.email!} />
-          </>
+          <NavbarUserMenu email={user.email!} />
         ) : (
           <>
             <Button variant="ghost" asChild>
