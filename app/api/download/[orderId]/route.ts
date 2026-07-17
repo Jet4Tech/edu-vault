@@ -23,9 +23,11 @@ export async function GET(
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
 
+  // download: true sets Content-Disposition: attachment so navigating to the
+  // URL saves the file instead of rendering it (and avoids popup blockers).
   const { data, error } = await adminClient.storage
     .from("products")
-    .createSignedUrl(order.products.file_key, 900);
+    .createSignedUrl(order.products.file_key, 900, { download: true });
 
   if (error) {
     return NextResponse.json(

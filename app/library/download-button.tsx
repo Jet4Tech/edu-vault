@@ -19,7 +19,10 @@ export function DownloadButton({ orderId }: { orderId: string }) {
         return;
       }
 
-      window.open(data.url, "_blank");
+      // Direct navigation instead of window.open: popups triggered after an
+      // await get blocked. The URL is Content-Disposition: attachment, so the
+      // browser downloads the file and stays on this page.
+      window.location.assign(data.url);
     } catch {
       alert("Failed to start download.");
     } finally {
