@@ -19,13 +19,41 @@ export async function POST() {
     );
   }
 
-  const { data: items } = await supabase
+  const { data: rawItems } = await supabase
     .from("basket_items")
     .select("*, products(*)")
     .eq("user_id", user.id);
 
-  if (!items || items.length === 0) {
+  if (!rawItems || rawItems.length === 0) {
     return NextResponse.json({ error: "Your basket is empty" }, { status: 400 });
+  }
+
+  // Re-validate server-side: the basket page filters unpublished and
+  // already-owned products for display, but rows can go stale between
+  // basketing and checkout.
+  const { data: paidOrders } = await supabase
+    .from("orders")
+    .select("product_id")
+    .eq("buyer_id", user.id)
+    .eq("status", "paid");
+
+  const ownedProductIds = new Set((paidOrders ?? []).map((o) => o.product_id));
+
+  const items = rawItems.filter(
+    (item) =>
+      item.products &&
+      item.products.status === "published" &&
+      !ownedProductIds.has(item.product_id)
+  );
+
+  if (items.length === 0) {
+    return NextResponse.json(
+      {
+        error:
+          "No purchasable items in your basket. Items may have been unpublished or already purchased.",
+      },
+      { status: 400 }
+    );
   }
 
   // Seller payout status lives on users rows the buyer cannot read under RLS,
