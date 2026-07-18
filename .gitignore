@@ -37,3 +37,4 @@ next-env.d.ts
 stripe-webhook-secret-for-vercel.txt
 
 .env*
+events_tmp.json
