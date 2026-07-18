@@ -24,16 +24,32 @@ export async function POST() {
 
     await supabase
       .from("users")
-      .update({ stripe_account_id: accountId })
+      .update({ stripe_account_id: accountId, stripe_onboarding_complete: false })
       .eq("id", user.id);
   }
 
-  const accountLink = await stripe.accountLinks.create({
-    account: accountId,
+  const linkParams = {
     refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/seller/connect/refresh`,
     return_url: `${process.env.NEXT_PUBLIC_APP_URL}/seller/dashboard`,
-    type: "account_onboarding",
-  });
+    type: "account_onboarding" as const,
+  };
+
+  let accountLink;
+  try {
+    accountLink = await stripe.accountLinks.create({ account: accountId, ...linkParams });
+  } catch {
+    // Stored account id is invalid for this Stripe mode (e.g. created in a
+    // sandbox) — start over with a fresh account.
+    const account = await stripe.accounts.create({ type: "express" });
+    accountId = account.id;
+
+    await supabase
+      .from("users")
+      .update({ stripe_account_id: accountId, stripe_onboarding_complete: false })
+      .eq("id", user.id);
+
+    accountLink = await stripe.accountLinks.create({ account: accountId, ...linkParams });
+  }
 
   return NextResponse.json({ url: accountLink.url });
 }
