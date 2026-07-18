@@ -16,8 +16,8 @@ export function Footer() {
           </span>
         </Link>
         <p className="max-w-md text-sm text-muted-foreground">
-          Educational resources made by real teachers. Pay once, download
-          forever — 90% of every sale goes to the creator.
+          Educational resources made by real teachers and students. Pay once,
+          download forever — 90% of every sale goes to the creator.
         </p>
         <div className="flex gap-6 text-sm text-muted-foreground">
           <Link href="/privacy-policy" className="transition-colors hover:text-foreground">

@@ -14,7 +14,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "Edu-Vault — Educational resources from real teachers",
+    default: "Edu-Vault — Educational resources from real teachers and students",
     template: "%s | Edu-Vault",
   },
   description:

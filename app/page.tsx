@@ -20,12 +20,8 @@ export default async function Home() {
         <div className="mx-auto max-w-7xl px-4 py-20 text-center">
           <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight sm:text-5xl">
             Quality educational resources from{" "}
-            <span className="relative whitespace-nowrap">
-              real teachers
-              <span
-                aria-hidden
-                className="absolute -bottom-1 left-0 h-3 w-full -rotate-1 rounded-sm bg-accent/70"
-              />
+            <span className="box-decoration-clone bg-gradient-to-t from-accent/70 from-[22%] to-transparent to-[22%] px-1">
+              real teachers and students
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
