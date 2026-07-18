@@ -31,7 +31,7 @@ function StarDisplay({ rating }: { rating: number }) {
           key={star}
           className={cn(
             "h-4 w-4",
-            star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+            star <= rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"
           )}
         />
       ))}
@@ -129,7 +129,7 @@ export function Reviews({
                 <Star
                   className={cn(
                     "h-6 w-6",
-                    star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                    star <= rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"
                   )}
                 />
               </button>

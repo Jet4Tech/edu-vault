@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const fraunces = Fraunces({
@@ -26,11 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable, fraunces.variable)}>
+    <html
+      lang="en"
+      className={cn("font-sans", inter.variable, fraunces.variable)}
+      suppressHydrationWarning
+    >
       <body className={cn(inter.className, "flex min-h-screen flex-col")}>
-        <Navbar />
-        <div className="flex-1">{children}</div>
-        <Footer />
+        <ThemeProvider>
+          <Navbar />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -128,7 +128,7 @@ export function BuyBox({
         <div className="mt-4">
           {alreadyOwns ? (
             <div className="space-y-2">
-              <Badge className="bg-green-100 text-green-800">You own this ✓</Badge>
+              <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300">You own this ✓</Badge>
               <Link href="/library" className="block text-sm underline">
                 View in your library →
               </Link>
@@ -138,7 +138,7 @@ export function BuyBox({
               <Link href="/sign-in">Add to basket</Link>
             </Button>
           ) : added ? (
-            <p className="text-center text-sm text-green-700">Added to basket!</p>
+            <p className="text-center text-sm text-green-700 dark:text-green-400">Added to basket!</p>
           ) : (
             <Button onClick={handleAddToBasket} disabled={loading} className="w-full">
               {loading ? "Adding..." : "Add to basket"}

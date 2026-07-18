@@ -114,7 +114,7 @@ export default async function BasketPage() {
                 </div>
 
                 {hasMultipleCurrencies && (
-                  <p className="mt-4 rounded bg-amber-100 p-3 text-sm text-amber-800">
+                  <p className="mt-4 rounded bg-amber-100 p-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">
                     Items in your basket use different currencies. You must have all items
                     in the same currency before checkout.
                   </p>

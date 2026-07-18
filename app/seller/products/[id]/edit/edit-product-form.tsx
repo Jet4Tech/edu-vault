@@ -165,7 +165,7 @@ export function EditProductForm({ product }: { product: Product }) {
       <h1 className="text-2xl font-bold">Edit product</h1>
 
       {success && (
-        <p className="mt-4 rounded bg-green-100 p-3 text-sm text-green-800">
+        <p className="mt-4 rounded bg-green-100 p-3 text-sm text-green-800 dark:bg-green-950 dark:text-green-300">
           Product updated successfully!
         </p>
       )}

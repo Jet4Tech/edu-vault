@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { NavbarUserMenu } from "@/components/NavbarUserMenu";
 import { BasketIcon } from "@/components/BasketIcon";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function Navbar() {
   const supabase = createClient();
@@ -47,7 +48,8 @@ export default async function Navbar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <ThemeToggle />
           <BasketIcon />
           {user ? (
             <NavbarUserMenu email={user.email!} />

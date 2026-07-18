@@ -2,20 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -35,6 +21,7 @@
     --font-sans: var(--font-sans);
   }
   :root {
+    color-scheme: light;
     --background: oklch(0.985 0.006 90);
     --foreground: oklch(0.24 0.03 275);
     --card: oklch(1 0 0);
@@ -70,6 +57,7 @@
     --sidebar-ring: oklch(0.708 0 0);
   }
   .dark {
+    color-scheme: dark;
     --background: oklch(0.2 0.02 275);
     --foreground: oklch(0.96 0.008 90);
     --card: oklch(0.25 0.025 275);
@@ -88,7 +76,7 @@
     --destructive-foreground: oklch(0.985 0 0);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    --ring: oklch(0.7 0.15 277);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);

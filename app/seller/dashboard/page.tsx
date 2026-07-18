@@ -48,7 +48,7 @@ export default async function SellerDashboardPage() {
 
       <div className="mt-4">
         {onboardingComplete ? (
-          <p className="text-green-600">Your Stripe account is connected ✓</p>
+          <p className="text-green-600 dark:text-green-400">Your Stripe account is connected ✓</p>
         ) : (
           <div className="space-y-3">
             <p>Your Stripe account is not connected.</p>
