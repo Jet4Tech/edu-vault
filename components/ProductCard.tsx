@@ -30,15 +30,15 @@ export function ProductCard({ product }: { product: Product }) {
   const category = getCategoryBySlug(product.category);
 
   return (
-    <Link href={`/product/${product.id}`}>
-      <Card className="overflow-hidden transition hover:shadow-md">
-        <div className="relative aspect-square bg-muted">
+    <Link href={`/product/${product.id}`} className="group block">
+      <Card className="overflow-hidden border transition-all duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-lg">
+        <div className="relative aspect-square overflow-hidden bg-muted">
           {product.preview_images?.[0] ? (
             <Image
               src={product.preview_images[0]}
               alt={product.title}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
@@ -47,15 +47,17 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
         <CardContent className="p-4">
-          <p className="line-clamp-2 font-medium">{product.title}</p>
-          <p className="mt-1 font-semibold">
-            {formatPrice(product.price, product.currency)}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            by {product.users.full_name}
-          </p>
+          <p className="line-clamp-2 font-medium leading-snug">{product.title}</p>
+          <div className="mt-2 flex items-baseline justify-between gap-2">
+            <p className="text-lg font-bold text-primary">
+              {formatPrice(product.price, product.currency)}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              by {product.users.full_name}
+            </p>
+          </div>
           {category && (
-            <Badge variant="secondary" className="mt-2">
+            <Badge variant="secondary" className="mt-2.5">
               {category.name}
             </Badge>
           )}

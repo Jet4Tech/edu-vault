@@ -1,0 +1,170 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "evt_3TuC1dPPk6sUAtNx0xTMnqM3",
+      "object": "event",
+      "api_version": "2026-05-27.dahlia",
+      "created": 1784295721,
+      "data": {
+        "object": {
+          "id": "pi_3TuC1dPPk6sUAtNx0mBHxjag",
+          "object": "payment_intent",
+          "amount": 6000,
+          "amount_capturable": 0,
+          "amount_details": {
+            "shipping": {
+              "amount": 0,
+              "from_postal_code": null,
+              "to_postal_code": null
+            },
+            "tax": {
+              "total_tax_amount": 0
+            },
+            "tip": {}
+          },
+          "amount_received": 6000,
+          "application": null,
+          "application_fee_amount": null,
+          "automatic_payment_methods": null,
+          "canceled_at": null,
+          "cancellation_reason": null,
+          "capture_method": "automatic_async",
+          "client_secret": "pi_3TuC1dPPk6sUAtNx0mBHxjag_secret_Gm2ClNBSqXrarVW5hdcpx4IVv",
+          "confirmation_method": "automatic",
+          "created": 1784295721,
+          "currency": "gbp",
+          "customer": null,
+          "customer_account": null,
+          "description": null,
+          "excluded_payment_method_types": null,
+          "last_payment_error": null,
+          "latest_charge": "ch_3TuC1dPPk6sUAtNx0Ueti0nA",
+          "livemode": false,
+          "managed_payments": {
+            "enabled": false
+          },
+          "metadata": {
+            "buyer_id": "82d79322-e366-4be6-b822-fb762959befa",
+            "checkout_session_id": "89093671-aa77-45ca-b1a1-260a7f558c79"
+          },
+          "next_action": null,
+          "on_behalf_of": null,
+          "payment_details": {
+            "customer_reference": null,
+            "order_reference": "cs_test_a1Qxp1q9DMhyHLltlki59mtVuci8rzdhtNm2ZZo98xOfFZWxP5IppiI7cC"
+          },
+          "payment_method": "pm_1TuC1cPPk6sUAtNxivCMli0X",
+          "payment_method_configuration_details": null,
+          "payment_method_options": {
+            "card": {
+              "installments": null,
+              "mandate_options": null,
+              "network": null,
+              "request_three_d_secure": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "card"
+          ],
+          "processing": null,
+          "receipt_email": null,
+          "review": null,
+          "setup_future_usage": null,
+          "shared_payment_granted_token": null,
+          "shipping": null,
+          "source": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffix": null,
+          "status": "succeeded",
+          "transfer_data": null,
+          "transfer_group": "order_89093671-aa77-45ca-b1a1-260a7f558c79"
+        }
+      },
+      "livemode": false,
+      "pending_webhooks": 0,
+      "request": {
+        "id": null,
+        "idempotency_key": "43977224-d03b-4948-8cbf-d2f8e8a11c5d"
+      },
+      "type": "payment_intent.succeeded"
+    },
+    {
+      "id": "evt_3TmU5FPPk6sUAtNx1j3fZ7J5",
+      "object": "event",
+      "api_version": "2026-05-27.dahlia",
+      "created": 1782458513,
+      "data": {
+        "object": {
+          "id": "pi_3TmU5FPPk6sUAtNx16U8krWZ",
+          "object": "payment_intent",
+          "amount": 10000,
+          "amount_capturable": 0,
+          "amount_details": {
+            "tip": {}
+          },
+          "amount_received": 10000,
+          "application": null,
+          "application_fee_amount": 300,
+          "automatic_payment_methods": null,
+          "canceled_at": null,
+          "cancellation_reason": null,
+          "capture_method": "automatic_async",
+          "client_secret": "pi_3TmU5FPPk6sUAtNx16U8krWZ_secret_gmXqzJO2PfBj0kp2H9hk0PupS",
+          "confirmation_method": "automatic",
+          "created": 1782458513,
+          "currency": "gbp",
+          "customer": null,
+          "customer_account": null,
+          "description": "(created by Testing Blueprints)",
+          "excluded_payment_method_types": null,
+          "last_payment_error": null,
+          "latest_charge": "ch_3TmU5FPPk6sUAtNx17HgyrnM",
+          "livemode": false,
+          "managed_payments": {
+            "enabled": false
+          },
+          "metadata": {},
+          "next_action": null,
+          "on_behalf_of": null,
+          "payment_method": "pm_1TmU5FPPk6sUAtNxSKoTflj8",
+          "payment_method_configuration_details": null,
+          "payment_method_options": {
+            "card": {
+              "installments": null,
+              "mandate_options": null,
+              "network": null,
+              "request_three_d_secure": "automatic"
+            }
+          },
+          "payment_method_types": [
+            "card"
+          ],
+          "processing": null,
+          "receipt_email": null,
+          "review": null,
+          "setup_future_usage": null,
+          "shared_payment_granted_token": null,
+          "shipping": null,
+          "source": null,
+          "statement_descriptor": null,
+          "statement_descriptor_suffix": null,
+          "status": "succeeded",
+          "transfer_data": {
+            "destination": "acct_1TmU50PPk65Myi0b"
+          },
+          "transfer_group": "group_pi_3TmU5FPPk6sUAtNx16U8krWZ"
+        }
+      },
+      "livemode": false,
+      "pending_webhooks": 0,
+      "request": {
+        "id": "req_8IJKhJB2uXv6gW",
+        "idempotency_key": "8babe171-efaa-4af7-bbfc-0476e09b7f51"
+      },
+      "type": "payment_intent.succeeded"
+    }
+  ],
+  "has_more": false,
+  "url": "/v1/events"
+}
