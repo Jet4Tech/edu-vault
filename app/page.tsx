@@ -45,8 +45,8 @@ export default async function Home() {
               <ShieldCheck className="h-4 w-4 text-primary" /> Secure checkout
             </span>
             <span className="flex items-center gap-1.5">
-              <HeartHandshake className="h-4 w-4 text-primary" /> 90% goes to
-              teachers
+              <HeartHandshake className="h-4 w-4 text-primary" /> 90% to
+              teachers and students
             </span>
           </div>
         </div>
