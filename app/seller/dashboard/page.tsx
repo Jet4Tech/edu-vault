@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { adminClient } from "@/lib/supabase/admin";
+import { stripe } from "@/lib/stripe/client";
 import { StartSellingButton } from "@/app/dashboard/start-selling-button";
 
 export default async function SellerDashboardPage() {
@@ -13,9 +15,30 @@ export default async function SellerDashboardPage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("name, stripe_onboarding_complete")
+    .select("name, stripe_account_id, stripe_onboarding_complete")
     .eq("id", user.id)
     .single();
+
+  let onboardingComplete = profile?.stripe_onboarding_complete === true;
+
+  // Sellers land here after Stripe Connect onboarding (it's the return_url).
+  // account.updated for Express accounts only reaches Connect-scoped webhooks,
+  // so check Stripe directly and sync our record when onboarding just finished.
+  if (!onboardingComplete && profile?.stripe_account_id) {
+    try {
+      const account = await stripe.accounts.retrieve(profile.stripe_account_id);
+      if (account.charges_enabled && account.payouts_enabled) {
+        await adminClient
+          .from("users")
+          .update({ stripe_onboarding_complete: true, role: "seller" })
+          .eq("id", user.id);
+        onboardingComplete = true;
+      }
+    } catch {
+      // Stale/foreign account id (e.g. from a previous Stripe mode) — leave
+      // the flow on "not connected" so the seller can restart onboarding.
+    }
+  }
 
   return (
     <div className="mx-auto max-w-2xl p-8">
@@ -24,7 +47,7 @@ export default async function SellerDashboardPage() {
       </h1>
 
       <div className="mt-4">
-        {profile?.stripe_onboarding_complete ? (
+        {onboardingComplete ? (
           <p className="text-green-600">Your Stripe account is connected ✓</p>
         ) : (
           <div className="space-y-3">
