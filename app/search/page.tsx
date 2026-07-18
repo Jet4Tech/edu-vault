@@ -19,7 +19,15 @@ export default async function SearchPage({
     .eq("status", "published");
 
   if (q) {
-    query = query.textSearch("fts", q, { type: "websearch" });
+    // Strip characters that break PostgREST or() filter syntax
+    const term = q.replace(/[,()%]/g, " ").trim();
+    if (term) {
+      // Full-text match for whole words, ilike fallback so partial
+      // words ("mat" -> "maths") still find results
+      query = query.or(
+        `fts.wfts.${term},title.ilike.*${term}*,description.ilike.*${term}*`
+      );
+    }
   }
 
   if (category) {
