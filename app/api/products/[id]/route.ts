@@ -83,6 +83,39 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // Sold products can't be hard-deleted: buyers keep lifetime access to the
+  // file, and the orders FK (ON DELETE RESTRICT) blocks the row anyway.
+  const { count: paidOrders } = await supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("product_id", params.id)
+    .eq("status", "paid");
+
+  if (paidOrders && paidOrders > 0) {
+    return NextResponse.json(
+      {
+        error:
+          "This product has been purchased, so it can't be deleted — buyers keep access to their files. Unpublish it instead to remove it from the marketplace.",
+      },
+      { status: 409 }
+    );
+  }
+
+  // Delete the row first; only remove the file once the row is really gone.
+  const { error: deleteError } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", params.id)
+    .eq("seller_id", user.id);
+
+  if (deleteError) {
+    console.error("Failed to delete product row:", deleteError);
+    return NextResponse.json(
+      { error: "Failed to delete product. Please try again." },
+      { status: 500 }
+    );
+  }
+
   const { error: storageError } = await adminClient.storage
     .from("products")
     .remove([product.file_key]);
@@ -90,12 +123,6 @@ export async function DELETE(
   if (storageError) {
     console.error("Failed to delete product file from storage:", storageError);
   }
-
-  await supabase
-    .from("products")
-    .delete()
-    .eq("id", params.id)
-    .eq("seller_id", user.id);
 
   return NextResponse.json({ success: true });
 }
