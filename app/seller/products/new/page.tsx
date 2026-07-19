@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 import { Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { categories } from "@/lib/categories";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { ProductGallery } from "@/components/ProductGallery";
 import {
   Select,
   SelectContent,
@@ -36,6 +38,7 @@ const MAIN_FILE_MIME_TYPES: Record<string, string> = {
 
 type PreviewImage = {
   file: File;
+  objectUrl: string;
   uploading: boolean;
   url: string | null;
   error: string | null;
@@ -85,6 +88,7 @@ export default function NewProductPage() {
 
     const newEntries: PreviewImage[] = filesToAdd.map((file) => ({
       file,
+      objectUrl: URL.createObjectURL(file),
       uploading: true,
       url: null,
       error: null,
@@ -124,7 +128,11 @@ export default function NewProductPage() {
   }
 
   function removePreviewImage(file: File) {
-    setPreviewImages((prev) => prev.filter((p) => p.file !== file));
+    setPreviewImages((prev) => {
+      const removed = prev.find((p) => p.file === file);
+      if (removed) URL.revokeObjectURL(removed.objectUrl);
+      return prev.filter((p) => p.file !== file);
+    });
   }
 
   async function handleMainFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -311,34 +319,60 @@ export default function NewProductPage() {
           {errors.previewImages && (
             <p className="text-sm text-destructive">{errors.previewImages}</p>
           )}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {previewImages.map((img) => (
               <div
                 key={img.file.name + img.file.lastModified}
-                className="relative flex h-16 w-16 flex-col items-center justify-center rounded border bg-muted"
+                className="relative h-20 w-20 overflow-hidden rounded-md border bg-muted"
               >
-                {img.uploading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    {img.error && (
-                      <p className="px-1 text-center text-[10px] leading-tight text-destructive">
-                        Upload failed
-                      </p>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removePreviewImage(img.file)}
-                      className="absolute -right-2 -top-2 rounded-full bg-destructive p-1 text-destructive-foreground"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.objectUrl}
+                  alt={img.file.name}
+                  className={cn(
+                    "h-full w-full object-cover",
+                    (img.uploading || img.error) && "opacity-40"
+                  )}
+                />
+                {img.uploading && (
+                  <Loader2 className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-spin" />
+                )}
+                {!img.uploading && img.error && (
+                  <p className="absolute inset-x-0 bottom-0 bg-destructive/90 px-1 py-0.5 text-center text-[10px] leading-tight text-destructive-foreground">
+                    Failed
+                  </p>
+                )}
+                {!img.uploading && (
+                  <button
+                    type="button"
+                    aria-label={`Remove ${img.file.name}`}
+                    onClick={() => removePreviewImage(img.file)}
+                    className="absolute right-1 top-1 rounded-full bg-destructive p-1 text-destructive-foreground shadow"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
                 )}
               </div>
             ))}
           </div>
         </div>
+
+        {/* Live buyer preview */}
+        {previewImages.some((p) => p.url) && (
+          <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
+            <div>
+              <Label>What buyers will see</Label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                This is exactly how your preview appears on the product page —
+                the frame adapts to landscape or portrait images.
+              </p>
+            </div>
+            <ProductGallery
+              images={previewImages.map((p) => p.url).filter(Boolean) as string[]}
+              title={title || "Your product"}
+            />
+          </div>
+        )}
 
         {/* Main file */}
         <div className="space-y-2">
