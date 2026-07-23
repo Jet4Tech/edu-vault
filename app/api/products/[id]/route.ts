@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { updateProductSchema } from "@/lib/validators/product";
+import {
+  formatMinPrice,
+  isPriceAboveMinimum,
+  updateProductSchema,
+  type SupportedCurrency,
+} from "@/lib/validators/product";
 import { adminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -44,6 +49,31 @@ export async function PUT(
 
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
+  }
+
+  // A price edit can arrive without a currency, so resolve the effective
+  // currency from the stored product before checking it against the floor.
+  if (parsed.data.price !== undefined) {
+    const { data: existing } = await supabase
+      .from("products")
+      .select("currency")
+      .eq("id", params.id)
+      .eq("seller_id", user.id)
+      .single();
+
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const currency = (parsed.data.currency ??
+      existing.currency) as SupportedCurrency;
+
+    if (!isPriceAboveMinimum(parsed.data.price, currency)) {
+      return NextResponse.json(
+        { error: `Price must be at least ${formatMinPrice(currency)}.` },
+        { status: 422 }
+      );
+    }
   }
 
   const { data: product, error } = await supabase

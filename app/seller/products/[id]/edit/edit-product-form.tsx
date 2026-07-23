@@ -5,6 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { categories } from "@/lib/categories";
+import {
+  MIN_PRICE_BY_CURRENCY,
+  formatMinPrice,
+  type SupportedCurrency,
+} from "@/lib/validators/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,8 +86,11 @@ export function EditProductForm({ product }: { product: Product }) {
 
     if (!title.trim()) newErrors.title = "Title is required.";
     if (!description.trim()) newErrors.description = "Description is required.";
-    if (!price || Number(price) < 0.5 || Number(price) > 500) {
-      newErrors.price = "Price must be between 0.50 and 500.";
+    const minPrice = MIN_PRICE_BY_CURRENCY[currency as SupportedCurrency];
+    if (!price || Number(price) < minPrice || Number(price) > 500) {
+      newErrors.price = `Price must be between ${formatMinPrice(
+        currency as SupportedCurrency
+      )} and 500.`;
     }
     if (!category) newErrors.category = "Category is required.";
 
@@ -218,13 +226,19 @@ export function EditProductForm({ product }: { product: Product }) {
             <Input
               id="price"
               type="number"
-              min={0.5}
+              min={MIN_PRICE_BY_CURRENCY[currency as SupportedCurrency]}
               max={500}
               step={0.01}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
-            {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
+            {errors.price ? (
+              <p className="text-sm text-destructive">{errors.price}</p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Minimum {formatMinPrice(currency as SupportedCurrency)}
+              </p>
+            )}
           </div>
           <div className="w-32 space-y-2">
             <Label>Currency</Label>

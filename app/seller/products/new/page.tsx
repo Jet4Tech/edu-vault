@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 import { Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { categories } from "@/lib/categories";
+import {
+  MIN_PRICE_BY_CURRENCY,
+  formatMinPrice,
+  type SupportedCurrency,
+} from "@/lib/validators/product";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -215,8 +220,11 @@ export default function NewProductPage() {
 
     if (title.trim().length < 5) newErrors.title = "Title must be at least 5 characters.";
     if (description.trim().length < 20) newErrors.description = "Description must be at least 20 characters.";
-    if (!price || Number(price) < 0.5 || Number(price) > 500) {
-      newErrors.price = "Price must be between 0.50 and 500.";
+    const minPrice = MIN_PRICE_BY_CURRENCY[currency as SupportedCurrency];
+    if (!price || Number(price) < minPrice || Number(price) > 500) {
+      newErrors.price = `Price must be between ${formatMinPrice(
+        currency as SupportedCurrency
+      )} and 500.`;
     }
     if (!category) newErrors.category = "Category is required.";
     const successfulImages = previewImages.filter((p) => p.url);
@@ -435,13 +443,19 @@ export default function NewProductPage() {
             <Input
               id="price"
               type="number"
-              min={0.5}
+              min={MIN_PRICE_BY_CURRENCY[currency as SupportedCurrency]}
               max={500}
               step={0.01}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
-            {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
+            {errors.price ? (
+              <p className="text-sm text-destructive">{errors.price}</p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Minimum {formatMinPrice(currency as SupportedCurrency)}
+              </p>
+            )}
           </div>
           <div className="w-32 space-y-2">
             <Label>Currency</Label>
