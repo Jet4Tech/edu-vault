@@ -23,15 +23,25 @@ export async function POST(request: Request) {
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
 
-  let event: Stripe.Event;
+  // Live mode uses two dashboard endpoints (account events + Connect events),
+  // each with its own signing secret. Locally, `stripe listen` uses just one.
+  const secrets = [
+    process.env.STRIPE_WEBHOOK_SECRET,
+    process.env.STRIPE_CONNECT_WEBHOOK_SECRET,
+  ].filter((s): s is string => Boolean(s));
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature!,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch {
+  let event: Stripe.Event | null = null;
+
+  for (const secret of secrets) {
+    try {
+      event = stripe.webhooks.constructEvent(body, signature!, secret);
+      break;
+    } catch {
+      // try the next secret
+    }
+  }
+
+  if (!event) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -152,13 +162,103 @@ export async function POST(request: Request) {
 
       await adminClient
         .from("checkout_sessions")
-        .update({ status: "paid" })
+        .update({ status: "paid", stripe_payment_intent: paymentIntent.id })
         .eq("id", checkoutSessionId);
 
       await adminClient
         .from("basket_items")
         .delete()
         .eq("user_id", checkoutSession.buyer_id);
+    }
+
+    if (event.type === "charge.dispute.created") {
+      const dispute = event.data.object as Stripe.Dispute;
+      const paymentIntentId =
+        typeof dispute.payment_intent === "string"
+          ? dispute.payment_intent
+          : dispute.payment_intent?.id;
+
+      if (!paymentIntentId) {
+        return NextResponse.json({ received: true });
+      }
+
+      const { data: checkoutSession } = await adminClient
+        .from("checkout_sessions")
+        .select("id, total_amount_cents")
+        .eq("stripe_payment_intent", paymentIntentId)
+        .single();
+
+      if (!checkoutSession) {
+        return NextResponse.json({ received: true });
+      }
+
+      // Under separate charges and transfers, Stripe debits the disputed amount
+      // from the platform balance while sellers keep the share already
+      // transferred to them. Recovery is never automatic — without reversing
+      // these transfers the platform absorbs the entire chargeback.
+      const disputedFraction = Math.min(
+        1,
+        dispute.amount / checkoutSession.total_amount_cents
+      );
+
+      const transfers = await stripe.transfers.list({
+        transfer_group: `order_${checkoutSession.id}`,
+        limit: 100,
+      });
+
+      for (const transfer of transfers.data) {
+        const target = Math.floor(transfer.amount * disputedFraction);
+        const remaining = transfer.amount - transfer.amount_reversed;
+        const amount = Math.min(target, remaining);
+
+        if (amount <= 0) continue;
+
+        await stripe.transfers.createReversal(
+          transfer.id,
+          {
+            amount,
+            metadata: {
+              dispute_id: dispute.id,
+              checkout_session_id: checkoutSession.id,
+            },
+          },
+          {
+            // Stripe redelivers events; without this a retry would claw back
+            // the seller's share a second time.
+            idempotencyKey: `reversal_${dispute.id}_${transfer.id}`,
+          }
+        );
+      }
+
+      // Only a full-amount dispute revokes access. A basket can span several
+      // sellers, so a partial dispute can't be attributed to one product and
+      // shouldn't strip the buyer of everything they paid for.
+      if (disputedFraction >= 1) {
+        await adminClient
+          .from("orders")
+          .update({ status: "disputed" })
+          .eq("stripe_payment_intent", paymentIntentId);
+
+        await adminClient
+          .from("checkout_sessions")
+          .update({ status: "disputed" })
+          .eq("id", checkoutSession.id);
+      }
+    }
+
+    if (event.type === "charge.dispute.closed") {
+      const dispute = event.data.object as Stripe.Dispute;
+
+      // Winning a dispute returns the funds to the platform, but the seller's
+      // transfer stays reversed — they're left short until someone re-pays
+      // them. Deliberately manual: re-transferring needs a judgement call on
+      // whether the seller should be made whole.
+      if (dispute.status === "won") {
+        console.warn(
+          "[stripe] Dispute won — seller transfers remain reversed and may need re-paying manually:",
+          { dispute_id: dispute.id, payment_intent: dispute.payment_intent }
+        );
+      }
     }
 
     return NextResponse.json({ received: true });
