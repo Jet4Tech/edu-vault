@@ -13,10 +13,14 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // buyer_id filter is defense-in-depth: RLS already scopes orders to the
+  // buyer (and seller), but this makes the download strictly the buyer's own
+  // paid order regardless of future policy changes.
   const { data: order } = await supabase
     .from("orders")
     .select("*, products(file_key)")
     .eq("id", params.orderId)
+    .eq("buyer_id", user.id)
     .single();
 
   if (!order || order.status !== "paid") {

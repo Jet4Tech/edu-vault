@@ -124,38 +124,3 @@ export async function POST(request: Request) {
 
   return NextResponse.json(updatedProduct, { status: 201 });
 }
-
-export async function GET(request: Request) {
-  const supabase = createClient();
-  const { searchParams } = new URL(request.url);
-
-  const search = searchParams.get("search");
-  const category = searchParams.get("category");
-  const page = parseInt(searchParams.get("page") ?? "1", 10);
-  const limit = parseInt(searchParams.get("limit") ?? "20", 10);
-
-  let query = supabase
-    .from("products")
-    .select("*, users:profiles(id, name, avatar_url)")
-    .eq("status", "published");
-
-  if (search) {
-    query = query.textSearch("fts", search, { type: "websearch" });
-  }
-
-  if (category) {
-    query = query.eq("category", category);
-  }
-
-  const offset = (page - 1) * limit;
-
-  const { data: products, error } = await query
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  if (error) {
-    return NextResponse.json({ error: "Failed to fetch products." }, { status: 500 });
-  }
-
-  return NextResponse.json(products);
-}
