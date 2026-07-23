@@ -38,3 +38,9 @@ stripe-webhook-secret-for-vercel.txt
 
 .env*
 events_tmp.json
+
+# Agent skills vendored by `npx skills add` — reinstallable from skills-lock.json.
+# .claude/skills is symlinked to .agents/skills, which Git follows on Windows.
+.agents/
+.qwen/
+.claude/skills/
