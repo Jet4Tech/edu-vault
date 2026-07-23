@@ -28,8 +28,11 @@ export async function GET() {
 
   const paidProductIds = new Set((paidOrders ?? []).map((o) => o.product_id));
 
+  // Filtering an embedded resource doesn't drop the parent row — an unpublished
+  // product comes back as products: null rather than removing the basket item —
+  // so drop those here, matching what the basket page renders.
   const filteredBasketItems = (basketItems ?? []).filter(
-    (item) => !paidProductIds.has(item.product_id)
+    (item) => item.products && !paidProductIds.has(item.product_id)
   );
 
   return NextResponse.json(filteredBasketItems);

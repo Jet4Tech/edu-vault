@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe/client";
+import { adminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
@@ -33,7 +34,9 @@ export async function POST() {
       const account = await stripe.accounts.create({ type: "express" });
       accountId = account.id;
 
-      await supabase
+      // adminClient: the payout columns are no longer self-writable, so a user
+      // can't promote themselves to seller by updating their own row.
+      await adminClient
         .from("users")
         .update({ stripe_account_id: accountId, stripe_onboarding_complete: false })
         .eq("id", user.id);
@@ -54,7 +57,7 @@ export async function POST() {
       const account = await stripe.accounts.create({ type: "express" });
       accountId = account.id;
 
-      await supabase
+      await adminClient
         .from("users")
         .update({ stripe_account_id: accountId, stripe_onboarding_complete: false })
         .eq("id", user.id);
