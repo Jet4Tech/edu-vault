@@ -11,17 +11,17 @@ export function StartSellingButton() {
 
     try {
       const res = await fetch("/api/stripe/connect", { method: "POST" });
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
-      if (!res.ok) {
-        alert(data.error ?? "Something went wrong");
+      if (!res.ok || !data?.url) {
+        alert(data?.error ?? "Something went wrong. Please try again.");
         setLoading(false);
         return;
       }
 
       window.location.href = data.url;
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Something went wrong");
+    } catch {
+      alert("Couldn't reach Stripe. Please check your connection and try again.");
       setLoading(false);
     }
   }
