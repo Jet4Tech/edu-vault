@@ -131,14 +131,23 @@ export async function POST(request: Request) {
           sellerAmountCents * (1 - platformFeePercent / 100)
         );
 
-        await stripe.transfers.create({
-          amount: transferAmountCents,
-          currency: checkoutSession.currency,
-          destination: seller.stripe_account_id,
-          transfer_group: `order_${checkoutSessionId}`,
-          source_transaction: paymentIntent.latest_charge as string,
-          metadata: { seller_id: sellerId, checkout_session_id: checkoutSessionId },
-        });
+        await stripe.transfers.create(
+          {
+            amount: transferAmountCents,
+            currency: checkoutSession.currency,
+            destination: seller.stripe_account_id,
+            transfer_group: `order_${checkoutSessionId}`,
+            source_transaction: paymentIntent.latest_charge as string,
+            metadata: { seller_id: sellerId, checkout_session_id: checkoutSessionId },
+          },
+          {
+            // Guarantees one transfer per (session, seller) even if Stripe
+            // redelivers this event or a retry runs after transfers were
+            // created but before the session was marked paid. Without this,
+            // a retry would pay every seller a second time.
+            idempotencyKey: `transfer_${checkoutSessionId}_${sellerId}`,
+          }
+        );
       }
 
       await adminClient
