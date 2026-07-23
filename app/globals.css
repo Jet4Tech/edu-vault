@@ -20,77 +20,89 @@
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
   }
+
+  /* Colour tokens are bare oklch channels, not finished oklch() colours.
+     tailwind.config.ts wraps each as `oklch(var(--token) / <alpha-value>)`,
+     the only form Tailwind v3 can inject an alpha into. Storing a complete
+     colour here instead silently breaks every opacity modifier in the app:
+     bg-primary/50 renders transparent and ring-ring/30 falls back to
+     Tailwind's default blue. Keep these as channels. */
   :root {
     color-scheme: light;
-    --background: oklch(0.985 0.006 90);
-    --foreground: oklch(0.24 0.03 275);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.24 0.03 275);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.24 0.03 275);
-    --primary: oklch(0.5 0.19 277);
-    --primary-foreground: oklch(0.985 0.005 90);
-    --secondary: oklch(0.94 0.025 280);
-    --secondary-foreground: oklch(0.35 0.09 277);
-    --muted: oklch(0.955 0.01 90);
-    --muted-foreground: oklch(0.5 0.02 275);
-    --accent: oklch(0.87 0.115 85);
-    --accent-foreground: oklch(0.3 0.06 70);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.985 0 0);
-    --border: oklch(0.9 0.015 280);
-    --input: oklch(0.9 0.015 280);
-    --ring: oklch(0.5 0.19 277);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
+    --background: 0.985 0.006 90;
+    --foreground: 0.24 0.03 275;
+    --card: 1 0 0;
+    --card-foreground: 0.24 0.03 275;
+    --popover: 1 0 0;
+    --popover-foreground: 0.24 0.03 275;
+    --primary: 0.5 0.19 277;
+    --primary-foreground: 0.985 0.005 90;
+    --secondary: 0.94 0.025 280;
+    --secondary-foreground: 0.35 0.09 277;
+    --muted: 0.955 0.01 90;
+    --muted-foreground: 0.5 0.02 275;
+    --accent: 0.87 0.115 85;
+    --accent-foreground: 0.3 0.06 70;
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+    --border: 0.9 0.015 280;
+    --input: 0.9 0.015 280;
+    --ring: 0.5 0.19 277;
+    --chart-1: 0.87 0 0;
+    --chart-2: 0.556 0 0;
+    --chart-3: 0.439 0 0;
+    --chart-4: 0.371 0 0;
+    --chart-5: 0.269 0 0;
     --radius: 0.75rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    --sidebar: 0.985 0 0;
+    --sidebar-foreground: 0.145 0 0;
+    --sidebar-primary: 0.205 0 0;
+    --sidebar-primary-foreground: 0.985 0 0;
+    --sidebar-accent: 0.97 0 0;
+    --sidebar-accent-foreground: 0.205 0 0;
+    --sidebar-border: 0.922 0 0;
+    --sidebar-ring: 0.708 0 0;
   }
+
   .dark {
     color-scheme: dark;
-    --background: oklch(0.2 0.02 275);
-    --foreground: oklch(0.96 0.008 90);
-    --card: oklch(0.25 0.025 275);
-    --card-foreground: oklch(0.96 0.008 90);
-    --popover: oklch(0.25 0.025 275);
-    --popover-foreground: oklch(0.96 0.008 90);
-    --primary: oklch(0.7 0.15 277);
-    --primary-foreground: oklch(0.18 0.02 275);
-    --secondary: oklch(0.3 0.04 277);
-    --secondary-foreground: oklch(0.92 0.02 280);
-    --muted: oklch(0.28 0.02 275);
-    --muted-foreground: oklch(0.7 0.02 275);
-    --accent: oklch(0.75 0.12 85);
-    --accent-foreground: oklch(0.22 0.05 70);
-    --destructive: oklch(0.704 0.191 22.216);
-    --destructive-foreground: oklch(0.985 0 0);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.7 0.15 277);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --background: 0.2 0.02 275;
+    --foreground: 0.96 0.008 90;
+    --card: 0.25 0.025 275;
+    --card-foreground: 0.96 0.008 90;
+    --popover: 0.25 0.025 275;
+    --popover-foreground: 0.96 0.008 90;
+    --primary: 0.7 0.15 277;
+    --primary-foreground: 0.18 0.02 275;
+    --secondary: 0.3 0.04 277;
+    --secondary-foreground: 0.92 0.02 280;
+    --muted: 0.28 0.02 275;
+    --muted-foreground: 0.7 0.02 275;
+    --accent: 0.75 0.12 85;
+    --accent-foreground: 0.22 0.05 70;
+    --destructive: 0.704 0.191 22.216;
+    --destructive-foreground: 0.985 0 0;
+    /* Were translucent white (10% and 15%) over the dark background. A channel
+       token can't carry its own alpha, so these are the equivalent opaque
+       blends against --background. */
+    --border: 0.28 0.018 275;
+    --input: 0.32 0.017 275;
+    --ring: 0.7 0.15 277;
+    --chart-1: 0.87 0 0;
+    --chart-2: 0.556 0 0;
+    --chart-3: 0.439 0 0;
+    --chart-4: 0.371 0 0;
+    --chart-5: 0.269 0 0;
+    --sidebar: 0.205 0 0;
+    --sidebar-foreground: 0.985 0 0;
+    --sidebar-primary: 0.488 0.243 264.376;
+    --sidebar-primary-foreground: 0.985 0 0;
+    --sidebar-accent: 0.269 0 0;
+    --sidebar-accent-foreground: 0.985 0 0;
+    --sidebar-border: 0.285 0 0;
+    --sidebar-ring: 0.556 0 0;
   }
+
   * {
     @apply border-border outline-ring;
   }
